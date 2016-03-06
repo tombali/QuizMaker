@@ -9,7 +9,7 @@ public class QMEditor : EditorWindow {
 	public static void ShowWindow () {
 		EditorWindow.GetWindow(typeof(QMEditor));
 	}
-
+	private string currentQuizName;
 	private JSONObject quiz;
 	private int currentQuestion = 0;
 	private bool fetchedQuiz = false;
@@ -20,10 +20,11 @@ public class QMEditor : EditorWindow {
 				Warning();
 			}
 			else {
-				GUILayout.Label("Editing: " + Selection.activeObject.name);
+				GUILayout.Label("Editing: " + currentQuizName);
 				if (!fetchedQuiz) {
 					fetchedQuiz = true;
 					TextAsset t = Selection.activeObject as TextAsset;
+					currentQuizName = Selection.activeObject.name;
 					quiz = new JSONObject(t.text);
 				}
 				EditorUI();
@@ -31,11 +32,21 @@ public class QMEditor : EditorWindow {
 		}
 		else Warning();
 	}
-
+	private string newQuiz = "newQuiz";
 	void Warning () {
 		GUILayout.Label("Select existing quiz file or create new quiz file");
+		newQuiz = EditorGUILayout.TextField(newQuiz);
 		if (GUILayout.Button("Create")) {
-
+			JSONObject o = new JSONObject();
+			JSONObject a = new JSONObject(JSONObject.Type.ARRAY);
+			o.AddField("quiz", a);
+			System.IO.File.WriteAllText(Application.dataPath + "/Resources/"+newQuiz+".txt", o.ToString());
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
+			fetchedQuiz = true;
+			TextAsset t = Resources.Load(newQuiz) as TextAsset;
+			quiz = new JSONObject(t.text);
+			currentQuizName = newQuiz;
 		}
 	}
 
@@ -82,18 +93,20 @@ public class QMEditor : EditorWindow {
 		}
 		GUI.color = Color.white;
 		GUILayout.Label("Questions in quiz");
-		for (int i = 0; i < quiz["quiz"].list.Count; i++) {
-			if (i == currentQuestion) {
-				GUI.color = Color.red;
-			}
-			else {
-				GUI.color = Color.white;
-			}
-			if (GUILayout.Button("Question " + (i + 1).ToString())) {
-				GUI.FocusControl("Dummy");
-				isLoaded = false;
-				Clean();
-				currentQuestion = i;
+		if (!quiz.IsNull) {
+			for (int i = 0; i < quiz["quiz"].list.Count; i++) {
+				if (i == currentQuestion) {
+					GUI.color = Color.red;
+				}
+				else {
+					GUI.color = Color.white;
+				}
+				if (GUILayout.Button("Question " + (i + 1).ToString())) {
+					GUI.FocusControl("Dummy");
+					isLoaded = false;
+					Clean();
+					currentQuestion = i;
+				}
 			}
 		}
 		GUI.color = Color.white;
@@ -165,9 +178,12 @@ public class QMEditor : EditorWindow {
 			GUI.color = Color.white;
 			GUILayout.EndHorizontal();
 		}
-		GUILayout.Space(20);
-		GUILayout.Label("Current question JSON Output");
-		EditorGUILayout.TextArea(quiz["quiz"][currentQuestion].ToString(), GUILayout.Height(200));
+		
+		if (quiz["quiz"].list.Count > 0) {
+			GUILayout.Space(20);
+			GUILayout.Label("Current question JSON Output");
+			EditorGUILayout.TextArea(quiz["quiz"][currentQuestion].ToString(), GUILayout.Height(200));
+		}
 		GUILayout.EndVertical();
 	}
 
@@ -194,13 +210,14 @@ public class QMEditor : EditorWindow {
 	}
 
 	void WriteFile () {
-		System.IO.File.WriteAllText(Application.dataPath + "/Resources/" + Selection.activeObject.name + ".txt", quiz.ToString());
+		System.IO.File.WriteAllText(Application.dataPath + "/Resources/" + currentQuizName + ".txt", quiz.ToString());
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
 		fetchedQuiz = false;
 	}
 
 	void ConvertFromJSON (JSONObject o) {
+		if (o == null) return;
 		question_type = (int)o["type"].n;
 		question_time = (int)o["time"].n;
 		question_points = (int)o["points"].n;
