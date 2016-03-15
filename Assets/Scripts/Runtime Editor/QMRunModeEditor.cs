@@ -88,6 +88,7 @@ public class QMRunModeEditor : MonoBehaviour {
 		switch (question_type) {
 			case 0:				
 				RowsDisplayOne();
+				correctButtonsParent.SetActive(true);
 				OneText(o["data"]);
 				shortAnswer.gameObject.SetActive(false);
 				break;
@@ -95,15 +96,18 @@ public class QMRunModeEditor : MonoBehaviour {
 				RowsDisplayBoth();
 				TwoText(o["data"]);
 				shortAnswer.gameObject.SetActive(false);
+				correctButtonsParent.SetActive(false);
 				break;
 			case 4:				
 				RowsDisplayOne();
 				Sort(o["data"]);
 				shortAnswer.gameObject.SetActive(false);
+				correctButtonsParent.SetActive(false);
 				break;
 			case 5:
 				RowsDisplayNone();
 				shortAnswer.gameObject.SetActive(true);
+				correctButtonsParent.SetActive(false);
 				ShortAnswer(o["data"]);
 				break;
 		}
@@ -171,6 +175,7 @@ public class QMRunModeEditor : MonoBehaviour {
 			texts1[i] = o["answers"].list[i].str;
 			rows[i].Field1.text = texts1[i];
 		}
+		SetCorrect(question_correct);
 	}
 
 	void TwoText (JSONObject o) {
@@ -225,6 +230,9 @@ public class QMRunModeEditor : MonoBehaviour {
 		for (int i = 0; i < correctButtons.Length; i++) {
 			if (correctButtons[i].Index != correct) {
 				correctButtons[i].GetComponent<Image>().color = Color.white;
+			}
+			else if (correctButtons[i].Index == correct) {
+				correctButtons[i].GetComponent<Image>().color = Color.green;
 			}
 		}
 	}
