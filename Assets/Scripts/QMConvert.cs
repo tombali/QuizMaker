@@ -136,6 +136,22 @@ public static class QMConvert {
 		return json;
 	}
 
+	public static JSONObject TypeFToJSON (string text, int time, int points, string answer) {
+		JSONObject json = new JSONObject();
+		json.AddField("type", 5);
+		json.AddField("question_text", text);
+		json.AddField("time", time);
+		json.AddField("points", points);
+
+		JSONObject data = new JSONObject();
+		data.AddField("isText", true);
+		data.AddField("answer", answer);
+
+		json.AddField("data", data);
+
+		return json;
+	}
+
 	// random hash
 	public static string GetHash () {
 		return System.IO.Path.GetRandomFileName().Replace(".", "");
