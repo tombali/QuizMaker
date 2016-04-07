@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -40,6 +41,11 @@ public class QMManager : MonoBehaviour {
 		get { return points; }
 	}
 
+	private Dictionary<int, bool> stats = new Dictionary<int, bool>();
+	public Dictionary<int, bool> Stats {
+		get { return stats; }
+	}
+
 	public delegate void OnAnswerAction (bool isCorrect);
 	public static event OnAnswerAction onAnswer;
 
@@ -72,6 +78,7 @@ public class QMManager : MonoBehaviour {
 			DisplayQuestion(currentQuestion);
 		}
 		points = 0;
+		stats.Clear();
 	}
 
 	public void DisplayNextQuestion () {
@@ -157,6 +164,8 @@ public class QMManager : MonoBehaviour {
 		}
 		// fire second event
 		onAnswerEvent.Invoke(isCorrect);
+		// save stats
+		stats.Add(currentQuestion, isCorrect);
 		// resetting some values
 		isAnswered = true;
 		handler.Hide();
@@ -175,7 +184,7 @@ public class QMManager : MonoBehaviour {
 			else {
 				StartCoroutine(BreakTime());
 			}
-		}
+		}		
 	}
 
 	private IEnumerator BreakTime () {
@@ -201,5 +210,19 @@ public class QMManager : MonoBehaviour {
 		QMUIReference.Instance.QuestionImage.gameObject.SetActive(false);
 		QMUIReference.Instance.QuestionTimeText.text = string.Empty;
 		QMUIReference.Instance.QuestionText.text = string.Empty;
+	}
+
+	public bool WasAnwseredCorrect (int index) {
+		bool value = false;
+		if (index < stats.Count) {
+			value = stats[index];
+		}
+		return value;
+	}
+
+	public void DebugStats () {
+		foreach (KeyValuePair<int, bool> stat in stats) {
+			Debug.Log(string.Format("Question {0}. is {1}", stat.Key + 1, stat.Value ? "correct" : "not correct"));
+		}
 	}
 }
