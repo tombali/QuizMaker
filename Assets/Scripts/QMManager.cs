@@ -12,6 +12,8 @@ public class QMManager : MonoBehaviour {
 	[SerializeField]
 	private bool loadNextQuestionOnAnswer;
 	[SerializeField]
+	private bool loadNextQuestionOnCorrectAnswer;
+	[SerializeField]
 	private float breakTime;
 	[SerializeField]
 	private QMBoolEvent onAnswerEvent;
@@ -19,16 +21,24 @@ public class QMManager : MonoBehaviour {
 	private UnityEvent onTimeExpire;
 	[SerializeField]
 	private UnityEvent onSkipQuestion;
+	[SerializeField]
+	private UnityEvent onPointsChange;
 
 	private bool isQuizDisplayed = false;
 
 	private int totalQuestions = 0;
 	private int currentQuestion = 0;
 	private int questionTime;
+	private int questionPoints;
 	private bool isAnswered = false;
 	private bool isSkipped = false;
 
 	private JSONObject currentQuiz;
+
+	private int points;
+	public int Points {
+		get { return points; }
+	}
 
 	public delegate void OnAnswerAction (bool isCorrect);
 	public static event OnAnswerAction onAnswer;
@@ -61,6 +71,7 @@ public class QMManager : MonoBehaviour {
 		if (displayQuestionOnStart) {
 			DisplayQuestion(currentQuestion);
 		}
+		points = 0;
 	}
 
 	public void DisplayNextQuestion () {
@@ -83,6 +94,7 @@ public class QMManager : MonoBehaviour {
 
 		QMUIReference.Instance.QuestionText.text = json["question_text"].str;
 		questionTime = (int)json["time"].n;
+		questionPoints = (int)json["points"].n;
 		QMUIReference.Instance.QuestionTimeText.text = questionTime.ToString();
 
 		switch ((int)json["type"].n) {
@@ -127,10 +139,18 @@ public class QMManager : MonoBehaviour {
 	public void SkipQuestion () {
 		isSkipped = true;
 		onSkipQuestion.Invoke();
-		ResetSharedElements();
+		ResetSharedElements();		
 	}
 
 	public void OnAnswer (bool isCorrect, IQuestionHandler handler) {
+		// add points
+		if (isCorrect) {
+			points += questionPoints;
+			if (onPointsChange != null) {
+				onPointsChange.Invoke();
+			}
+		}
+
 		// fire event
 		if (onAnswer != null) {
 			onAnswer.Invoke(isCorrect);
@@ -145,6 +165,10 @@ public class QMManager : MonoBehaviour {
 		currentQuestion++;
 		// load next question if set to true
 		if (loadNextQuestionOnAnswer) {
+			// load next question if answer is correct
+			if (loadNextQuestionOnCorrectAnswer && !isCorrect) {
+				return;
+			}
 			if (breakTime <= 0) {
 				DisplayQuestion(currentQuestion);
 			}
