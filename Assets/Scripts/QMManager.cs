@@ -109,7 +109,10 @@ public class QMManager : MonoBehaviour {
 		QMUIReference.Instance.QuestionText.text = json["question_text"].str;
 		questionTime = (int)json["time"].n;
 		questionPoints = (int)json["points"].n;
-		QMUIReference.Instance.QuestionTimeText.text = questionTime.ToString();
+		if (questionTime > 0) {
+			QMUIReference.Instance.QuestionTimeText.text = questionTime.ToString();
+		}
+		else QMUIReference.Instance.QuestionTimeText.text = string.Empty;
 
 		switch ((int)json["type"].n) {
 			case 0:
@@ -128,8 +131,9 @@ public class QMManager : MonoBehaviour {
 				QMUIReference.Instance.TypeE.Process(json["data"]);
 				break;
 		}
-
-		StartCoroutine(Timer(questionTime));
+		if (questionTime > 0) {
+			StartCoroutine(Timer(questionTime));
+		}
 	}
 
 	private IEnumerator Timer (int t) {
