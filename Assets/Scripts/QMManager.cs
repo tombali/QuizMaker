@@ -24,6 +24,8 @@ public class QMManager : MonoBehaviour {
 	private UnityEvent onSkipQuestion;
 	[SerializeField]
 	private UnityEvent onPointsChange;
+	[SerializeField]
+	private UnityEvent onQuizComplete;
 
 	private bool isQuizDisplayed = false;
 
@@ -88,6 +90,11 @@ public class QMManager : MonoBehaviour {
 	public void DisplayQuestion (int index) {
 		if (currentQuestion < totalQuestions) {
 			DisplayQuestion(currentQuiz["quiz"][index]);
+		}
+		else {
+			if (onQuizComplete != null) {
+				onQuizComplete.Invoke();
+			}
 		}
 	}
 

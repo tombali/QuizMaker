@@ -140,8 +140,6 @@ public class UITypeBHandler : MonoBehaviour, IQuestionHandler {
 			}
 		}
 
-		Debug.Log(correct);
-
 		if (correct) {
 			QMManager.Instance.OnAnswer(true, this);
 		}
