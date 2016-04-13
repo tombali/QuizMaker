@@ -37,6 +37,7 @@ public class QMManager : MonoBehaviour {
 	private bool isSkipped = false;
 
 	private JSONObject currentQuiz;
+	private Coroutine timerCoroutine;
 
 	private int points;
 	public int Points {
@@ -103,6 +104,10 @@ public class QMManager : MonoBehaviour {
 			DisplayQuizUI(true);
 		}
 
+		if (timerCoroutine != null) {
+			StopCoroutine(timerCoroutine);
+		}
+
 		ResetBooleans();
 		ResetSharedElements();
 
@@ -131,8 +136,9 @@ public class QMManager : MonoBehaviour {
 				QMUIReference.Instance.TypeE.Process(json["data"]);
 				break;
 		}
+
 		if (questionTime > 0) {
-			StartCoroutine(Timer(questionTime));
+			timerCoroutine = StartCoroutine(Timer(questionTime));
 		}
 	}
 
@@ -144,6 +150,7 @@ public class QMManager : MonoBehaviour {
 		}
 		if (t <= 0) {
 			onTimeExpire.Invoke();
+			currentQuestion++;
 			if (breakTime <= 0) {
 				DisplayQuestion(currentQuestion);
 			}
@@ -213,6 +220,7 @@ public class QMManager : MonoBehaviour {
 	}
 
 	private void ResetSharedElements () {
+		questionTime = -1;
 		QMUIReference.Instance.TypeA.Hide();
 		QMUIReference.Instance.TypeB.Hide();
 		QMUIReference.Instance.TypeC.Hide();
