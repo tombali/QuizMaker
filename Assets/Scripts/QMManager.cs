@@ -76,6 +76,7 @@ public class QMManager : MonoBehaviour {
 	public void LoadQuiz (string filename) {
 		TextAsset t = Resources.Load(filename) as TextAsset;
 		currentQuiz = new JSONObject(t.text);
+		currentQuestion = 0;
 		totalQuestions = currentQuiz["quiz"].list.Count;
 		if (displayQuestionOnStart) {
 			DisplayQuestion(currentQuestion);
@@ -86,6 +87,14 @@ public class QMManager : MonoBehaviour {
 
 	public void DisplayNextQuestion () {
 		DisplayQuestion(currentQuestion);
+	}
+
+	public void DisplayNextQuestionAdd () {
+		DisplayQuestion(currentQuestion);
+	}
+
+	void Update () {
+		if (Input.GetKeyDown(KeyCode.N)) LoadQuiz(quizFileName);
 	}
 
 	public void DisplayQuestion (int index) {
