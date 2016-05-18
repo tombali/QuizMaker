@@ -144,7 +144,6 @@ public static class QMConvert {
 		json.AddField("points", points);
 
 		JSONObject data = new JSONObject();
-		data.AddField("isText", true);
 		data.AddField("answer", answer);
 
 		json.AddField("data", data);

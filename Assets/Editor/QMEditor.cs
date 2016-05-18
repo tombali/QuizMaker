@@ -91,6 +91,12 @@ public class QMEditor : EditorWindow {
 			JSONObject o = QMConvert.TypeEToJSON(string.Empty, 0, 0, new string[5]);
 			NewQuestion(o);
 		}
+		if (GUILayout.Button("New short answer")) {
+			newQuestion = true;
+			isLoaded = false;
+			JSONObject o = QMConvert.TypeFToJSON(string.Empty, 0, 0, string.Empty);
+			NewQuestion(o);
+		}
 		GUI.color = Color.white;
 		GUILayout.Label("Questions in quiz");
 		if (!quiz.IsNull) {
@@ -127,6 +133,8 @@ public class QMEditor : EditorWindow {
 	private string[] texts1 = new string[5], texts2 = new string[5];
 	private Sprite[] sprites1 = new Sprite[5], sprites2 = new Sprite[5];
 	private Sprite questionImage;
+	private string shortAnswer;
+
 	void QuestionEditor (JSONObject o) {
 		if (newQuestion) return;
 
@@ -157,6 +165,9 @@ public class QMEditor : EditorWindow {
 					break;
 				case 4:
 					DisplaySort();
+					break;
+				case 5:
+					DisplayShortAnswer();
 					break;
 			}
 
@@ -204,7 +215,9 @@ public class QMEditor : EditorWindow {
 			case 4:
 				quiz["quiz"][currentQuestion] = QMConvert.TypeEToJSON(question_question_text, question_time, question_points, texts1);
 				break;
-
+			case 5:
+				quiz["quiz"][currentQuestion] = QMConvert.TypeFToJSON(question_question_text, question_time, question_points, shortAnswer);
+				break;
 		}
 		WriteFile();
 	}
@@ -238,6 +251,9 @@ public class QMEditor : EditorWindow {
 				break;
 			case 4:
 				Sort(o["data"]);
+				break;
+			case 5:
+				ShortAnswer(o["data"]);
 				break;
 		}
 
@@ -337,6 +353,14 @@ public class QMEditor : EditorWindow {
 		for (int i = 0; i < texts1.Length; i++) {
 			texts1[i] = EditorGUILayout.TextField(texts1[i]);
 		}
+	}
+
+	void ShortAnswer (JSONObject o) {
+		shortAnswer = o["answer"].str;
+	}
+
+	void DisplayShortAnswer () {
+		shortAnswer = EditorGUILayout.TextField(shortAnswer);
 	}
 
 	void Clean () {
