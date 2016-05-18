@@ -1,8 +1,18 @@
 {
-	"quiz": [{
+	"quiz": [
+	 {
+		"type": 5,
+		"question_text": "5th month in a year is...",
+		"time": 20,
+		"points": 10,
+		"data": {
+			"answer": "May"
+		}
+	},
+	{
 		"type": 0,
 		"question_text": "Current year is...",
-		"time": 30,
+		"time":5,
 		"points": 10,
 		"data": {
 			"image": "bunny1",

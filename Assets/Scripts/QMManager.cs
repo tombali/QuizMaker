@@ -144,6 +144,9 @@ public class QMManager : MonoBehaviour {
 			case 4:
 				QMUIReference.Instance.TypeE.Process(json["data"]);
 				break;
+			case 5:
+				QMUIReference.Instance.TypeF.Process(json["data"]);
+				break;
 		}
 
 		if (questionTime > 0) {
@@ -235,6 +238,7 @@ public class QMManager : MonoBehaviour {
 		QMUIReference.Instance.TypeC.Hide();
 		QMUIReference.Instance.TypeD.Hide();
 		QMUIReference.Instance.TypeE.Hide();
+		QMUIReference.Instance.TypeF.Hide();
 		QMUIReference.Instance.QuestionImage.gameObject.SetActive(false);
 		QMUIReference.Instance.QuestionTimeText.text = string.Empty;
 		QMUIReference.Instance.QuestionText.text = string.Empty;

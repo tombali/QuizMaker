@@ -53,6 +53,12 @@ public class QMUIReference : MonoBehaviour {
 		get { return typeE; }
 	}
 
+	[SerializeField]
+	private UITypeFHandler typeF;
+	public UITypeFHandler TypeF {
+		get { return typeF; }
+	}
+
 	private static QMUIReference instance;
 	public static QMUIReference Instance {
 		get { return instance; }
